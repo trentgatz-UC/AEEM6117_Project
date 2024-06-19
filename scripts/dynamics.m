@@ -25,12 +25,12 @@ fcn = @(t,x) odefcn(t,x,robots,k,m,l0);
 tspan = [0 tf];
 
 [t, y] = ode45(fcn, tspan,y0);
-vidspeed = 10; %frames per second
+vid_framerate = 24; %framerate
 for i = 1:size(y,1)
     time = t(i);
     if i == 1       
         frame = 1;
-    elseif time < (t_prev+1/vidspeed)
+    elseif time < (t_prev+1/vid_framerate)
         continue
     end
     display(robots, [y(i,1) y(i,3)], targ, time)
@@ -42,6 +42,7 @@ end
 
 %% save video (looks like garbage, how to fill in empty frames to fix frame rate?)
 vidfile = VideoWriter('testmovie.mp4', 'MPEG-4');
+vidfile.FrameRate = vid_framerate;
 open(vidfile)
 writeVideo(vidfile,vid)
 close(vidfile)
