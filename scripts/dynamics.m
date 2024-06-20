@@ -22,8 +22,8 @@ robots = [r1; r2; r3];
 % Begins at home conditions with no velocity
 
 y0 = zeros(4,1);
-y0(1) = .2;
-y0(3) = -.2;
+y0(1) = .1;
+y0(3) = -.1;
 % % pos_ic = [robots(1,1) robots(1,2)] / 15; % moved directly toward a different robot
 % % y0(1) = pos_ic(1);
 % % y0(3) = pos_ic(2);
