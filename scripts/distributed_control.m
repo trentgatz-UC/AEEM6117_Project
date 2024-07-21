@@ -21,7 +21,7 @@ targets = Utils.generate_training_targets(20, robots);
 nMFs =3;
 nvars = 63; % 3 inputs * 3 params * 3 mfs + 1 ouputs * 3 params * 3 mfs + 27 rules
 fis = FIS_setup;
-options = gaoptimset('Generations',50,'PopulationSize',20,'StallGenLimit',50,'TolFun',1e-12,'Display','iter', 'PlotFcn', @gaplotbestf, 'UseParallel',false); % setting the options in GA.
+options = gaoptimset('Generations',50,'PopulationSize',20,'StallGenLimit',50,'TolFun',1e-12,'Display','iter', 'PlotFcn', @gaplotbestf, 'UseParallel', true); % setting the options in GA.
 fitnessfcn = @(vec) cost_function(vec, fis, targets, robots, k, m, l0);
 
 PopRange = [-1*ones(1,9) -10*ones(1,9) -10*ones(1,9) -10*ones(1,9)  ones(1,27);...
