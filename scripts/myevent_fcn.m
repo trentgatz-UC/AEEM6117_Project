@@ -3,6 +3,6 @@ function [value, isterminal, direction]  = myevent_fcn(t,y, robots)
 obj = [y(1) y(3)];
 
 value = ~Utils.isValidCableLength(robots, obj);
-isterminal = value;
+isterminal = true;
 direction = 0;
 end

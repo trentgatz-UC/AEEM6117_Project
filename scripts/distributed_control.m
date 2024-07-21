@@ -1,6 +1,6 @@
-%% Centralized Controller
+%% distributed controller
 %{
-Train a fis to simultaneously control all 3 robots so that the object
+Train a fis to control all 3 robots independently so that the object
 reaches the target position
 %}
 clear all; close all; clc;
@@ -30,9 +30,10 @@ PopRange = [-1*ones(1,9) -10*ones(1,9) -10*ones(1,9) -10*ones(1,9)  ones(1,27);.
 [bestfis,fit] = ga(fitnessfcn,nvars,[],[],[],[],PopRange(1,:),PopRange(2,:),[],37:nvars,options);  % Optimising using GA. Check the syntax of GA to understand each element.
 save('distributed_controller');
 
-fis = gen_fis(fis, bestfis);
 
- fcn = @(t,x) odefcn(t,x,robots,k, m, l0,fis,target);
+%% Rerun best case for visualization
+fis = gen_fis(fis, bestfis);
+fcn = @(t,x) odefcn(t,x,robots,k, m, l0,fis,target);
 tspan = [0 20]; % simulation is to run for 20 seconds
 y0 = zeros(1,4); % object starts at home position each time
 [tout, yout] = ode45(fcn, tspan, y0, options);
