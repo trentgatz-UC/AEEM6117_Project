@@ -33,6 +33,8 @@ to apply any arbitrary forcing vector.
 %}
 distance = sqrt(sum((obj - target).^2)); % distance between object and target
 fis_input = [distance, obj_vel(1), obj_vel(2)];
+
+w = warning('off', 'all'); % prevent printin all that garbage to command window, super slow
 F_control = evalfis(fis, fis_input)*1000;
 
 % Setup differential equations for solving

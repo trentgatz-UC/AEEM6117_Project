@@ -22,6 +22,6 @@ function [fis] = gen_fis_centralized(fis, vec)
     start_pos =46;
     for i = 1:size(fis.Rules, 2)
         fis.rule(i).consequent = vec(start_pos:start_pos+1);
-        start_pos = start_pos + 1;
+        start_pos = start_pos + 2;
     end
 end

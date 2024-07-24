@@ -14,7 +14,7 @@ fis = mamfis('Name', 'RobotController',...
     'MFType', "trimf",...
     'AddRules', "allcombinations");
 
-vel_range = [-10 10]; % Starting Assumption
+vel_range = [-20 20]; % Starting Assumption
 
 fis.Inputs(1).Name = "Distance to Target";
 fis.Inputs(1).Range = [0 0.866]; % Valid distances between object and target

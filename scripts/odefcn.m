@@ -35,7 +35,9 @@ end
 
 d2ydt2 = zeros(4,1);
 d2ydt2(1) = x(2);
-d2ydt2(2) = k/m*l0*(sum(rbi_hat(:,1))) - N*x(1) + F_control(1)*cos(theta(1)) + F_control(2)*sin(theta(2)) + F_control(3)*cos(theta(3));
+d2ydt2(2) = k/m*l0*(sum(rbi_hat(:,1))) - N*x(1) + F_control(1)*cos(theta(1))...
+    + F_control(2)*sin(theta(2)) + F_control(3)*cos(theta(3));
 d2ydt2(3) = x(4);
-d2ydt2(4) = k/m*l0*(sum(rbi_hat(:,2))) - N*x(3) + F_control(1)*sin(theta(1)) + F_control(2)*cos(theta(2)) + F_control(3)*sin(theta(3));
+d2ydt2(4) = k/m*l0*(sum(rbi_hat(:,2))) - N*x(3) + F_control(1)*sin(theta(1))...
+    + F_control(2)*cos(theta(2)) + F_control(3)*sin(theta(3));
 end
