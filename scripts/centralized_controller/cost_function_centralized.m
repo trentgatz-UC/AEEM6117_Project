@@ -16,5 +16,8 @@ for iterator = 1:size(targets,1)
     obj = [yout(:, 1) yout(:, 3)];
     dist = sqrt(sum(sum(((obj-target).^2),2))); % distance between object and target @ each time step
     cost = cost + dist + 50*(tspan(end) - tout(end));
+    if sum(yout(:,1)) + sum(yout(:,3)) == 0
+        cost = cost + 10;
+    end
 end
 end

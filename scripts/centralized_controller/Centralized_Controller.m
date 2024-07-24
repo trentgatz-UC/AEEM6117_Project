@@ -16,23 +16,17 @@ r1 = [-a/2 -a*tand(30)/2];  % bottom left
 r2 = [0 a/(2*cosd(30))];    % top
 r3 = [a/2 -a*tand(30)/2];   % bottom right
 robots = [r1; r2; r3];
-% targets = Utils.generate_training_targets(1, robots);
 target = [0.1 0.2];
 
 nMFs =3;
-%% Old setup with too many parameters
-% nvars = 99; % 3 inputs * 3 params * 3 mfs + 2 ouputs * 3 params * 3 mfs + 27 *2 rules
-% PopRange = [-1*ones(1,9) -10*ones(1,9) -10*ones(1,9) -10*ones(1,9) -10*ones(1,9) ones(1,27*2);...
-%     ones(1,9) 10*ones(1,9) 10*ones(1,9) 10*ones(1,9) 10*ones(1,9) nMFs*ones(1,27*2)];
-% fis = FIS_setup_centralized;
 
 nvars = 3*6 + 27*3; % 3*3 inputs, 3*3 outputs, 3*27 rules
 PopRange = [-1*ones(1,3) -10*ones(1,3*5) zeros(1,27*3);...
     ones(1,3) 10*ones(1,3*5) nMFs*ones(1,27*3)];
 fis = readfis('RobotController_centralized.fis');
 
-options = optimoptions('ga', 'FunctionTolerance', 1e-3, 'ConstraintTolerance', 1e-3, 'FitnessLimit', 1,...
-    'PlotFcn', {@gaplotbestf, @gaplotrange}, 'UseParallel', false, 'PopulationSize', 10); 
+options = optimoptions('ga', 'FunctionTolerance', 1e-3, 'ConstraintTolerance', 1e-3, 'FitnessLimit', 9,...
+    'PlotFcn', {@gaplotbestf, @gaplotrange}, 'UseParallel', true, 'PopulationSize', 10); 
 fitnessfcn = @(vec) cost_function_centralized(vec, fis, target, robots, k, m, l0);
 
 
@@ -48,6 +42,7 @@ y0 = zeros(1,4); % object starts at home position each time
 options = odeset('RelTol', 1e-3, 'Events', event_fcn, Stats='on');
 [tout, yout] = ode45(fcn, tspan, y0, options);
 
-vid_framerate = 24*5; % video frame rate (frames / second)
+vid_framerate = 24; % video frame rate (frames / second)
 vid_name = 'centralized_control_video';
+figure
 vid = make_video(vid_name, tout, yout, vid_framerate, robots, target);

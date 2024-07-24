@@ -35,7 +35,7 @@ distance = sqrt(sum((obj - target).^2)); % distance between object and target
 fis_input = [distance, obj_vel(1), obj_vel(2)];
 
 w = warning('off', 'all'); % prevent printin all that garbage to command window, super slow
-F_control = evalfis(fis, fis_input)*1000;
+F_control = evalfis(fis, fis_input);
 
 % Setup differential equations for solving
 d2ydt2 = zeros(4,1);
