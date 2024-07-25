@@ -20,11 +20,12 @@ x_velocity = x(2);
 y_velocity = x(4);
 
 F_control = nan(3,1);
+warning('off', 'all');
 for i = 1:3
     distance = sqrt( (robots(i,1)-obj(1))^2 + (robots(i,2)-obj(2))^2) - ...
         sqrt( (robots(i,1) - target(1))^2 + (robots(i,2)-target(2))^2);
     fis_input = [distance, x_velocity, y_velocity];
-    F_control(i) = evalfis(fis, fis_input)*100;
+    F_control(i) = evalfis(fis, fis_input);
 end
 
 % Determine Angles between robots & object for forcing directions

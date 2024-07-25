@@ -24,6 +24,7 @@ nvars = nMFs*6 + 27*3; % 3*3 inputs, 3*3 outputs, 3*27 rules
 PopRange = [-1*ones(1,3) -10*ones(1,3*5) zeros(1,27*3);...
     ones(1,3) 10*ones(1,3*5) nMFs*ones(1,27*3)];
 fis = readfis('RobotController_centralized.fis');
+fis.DisableStructuralChecks = true; % speed up FIS updates
 
 options = optimoptions('ga', 'FunctionTolerance', 1e-3, 'ConstraintTolerance', 1e-3, 'FitnessLimit', 9,...
     'PlotFcn', {@gaplotbestf, @gaplotrange}, 'UseParallel', true, 'PopulationSize', 10); 
@@ -45,6 +46,7 @@ options = odeset('RelTol', 1e-3, 'Events', event_fcn, Stats='on');
 [tout, yout] = ode45(fcn, tspan, y0, options);
 
 vid_framerate = 24; % video frame rate (frames / second)
-vid_name = 'centralized_control_video';
+root = matlab.project.rootProject().RootFolder();
+vid_name = fullfile(root,'milestone2_centralized_control');
 figure
 vid = make_video(vid_name, tout, yout, vid_framerate, robots, target);
