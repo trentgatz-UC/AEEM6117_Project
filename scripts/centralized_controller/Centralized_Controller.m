@@ -3,7 +3,7 @@
 Train a fis to simultaneously control all 3 robots so that the object
 reaches the target position
 %}
-clear all; close all; clc;
+clear; close all; clc;
 %% Givens
 k = 95.54; % N/m - spring stiffness
 m = 0.01; % kg - mass
@@ -20,7 +20,7 @@ target = [0.1 0.2];
 
 nMFs =3;
 
-nvars = 3*6 + 27*3; % 3*3 inputs, 3*3 outputs, 3*27 rules
+nvars = nMFs*6 + 27*3; % 3*3 inputs, 3*3 outputs, 3*27 rules
 PopRange = [-1*ones(1,3) -10*ones(1,3*5) zeros(1,27*3);...
     ones(1,3) 10*ones(1,3*5) nMFs*ones(1,27*3)];
 fis = readfis('RobotController_centralized.fis');
@@ -29,8 +29,10 @@ options = optimoptions('ga', 'FunctionTolerance', 1e-3, 'ConstraintTolerance', 1
     'PlotFcn', {@gaplotbestf, @gaplotrange}, 'UseParallel', true, 'PopulationSize', 10); 
 fitnessfcn = @(vec) cost_function_centralized(vec, fis, target, robots, k, m, l0);
 
-
 %46:nvars if not using shrunk definition of MFs
+% % % delete(gcp('nocreate'))
+% % % parpool('Processes');
+
 [bestfis,fit] = ga(fitnessfcn,nvars,[],[],[],[],PopRange(1,:),PopRange(2,:),[],19:nvars,options);  % Optimising using GA. Check the syntax of GA to understand each element.
 save('centralized_controller');
 
