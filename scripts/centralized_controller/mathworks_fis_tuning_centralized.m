@@ -70,7 +70,7 @@ function [cost] = cost_function_mw(fis, target, robots, k, m, l0)
 event_fcn = @(t,y) myevent_fcn(t,y,robots);
 
 options = odeset('RelTol', 1e-3, 'Events', event_fcn);
-fcn = @(t,x) odefcn(t,x,robots,k, m, l0,fis,target);
+fcn = @(t,x) odefcn_centralized(t,x,robots,k, m, l0,fis,target);
 tspan = [0 20]; % simulation is to run for 20 seconds
 y0 = zeros(1,10); % object starts at home position each time
 [tout, yout] = ode45(fcn, tspan, y0, options);         % trying with 15s to see if problem is too stiff
