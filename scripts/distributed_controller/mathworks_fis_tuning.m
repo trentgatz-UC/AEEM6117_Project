@@ -38,11 +38,11 @@ fis_options.MethodOptions.ConstraintTolerance = 1e-3;
 fis_options.MethodOptions.FitnessLimit = 1;
 fis_options.MethodOptions.PopulationSize = 20;
 % fis_options.MethodOptions.PlotFcn = {@gaplotbestf, @gaplotrange};
-fis_options.MethodOptions.MaxGenerations = 500;
+fis_options.MethodOptions.MaxGenerations = 100;
 fis_options.MethodOptions.UseParallel = true;
-fis_options.MethodOptions.MaxStallGenerations = 99;
+fis_options.MethodOptions.MaxStallGenerations = 50;
 
-stalltime = 18 * 3600; % 12 hours, [seconds]
+stalltime = 12 * 3600; % 1 hour stall for testing
 fis_options.MethodOptions.MaxStallTime = stalltime;
 
 w = warning('off', 'all');
@@ -54,7 +54,7 @@ writeFIS(fis_trained, "dynamics_FIS_trained.fis")
 %% rerun & make video
 fcn = @(t,x) odefcn(t,x,robots,k, m, l0,fis,target);
 tspan = [0 20]; % simulation is to run for 20 seconds
-y0 = zeros(1,4); % object starts at home position each time
+y0 = zeros(1,10); % object starts at home position each time
 event_fcn = @(t,y) myevent_fcn(t,y,robots);
 options = odeset('RelTol', 1e-3, 'Events', event_fcn);
 [tout, yout] = ode45(fcn, tspan, y0, options);
@@ -72,7 +72,7 @@ event_fcn = @(t,y) myevent_fcn(t,y,robots);
 options = odeset('RelTol', 1e-3, 'Events', event_fcn);
 fcn = @(t,x) odefcn(t,x,robots,k, m, l0,fis,target);
 tspan = [0 20]; % simulation is to run for 20 seconds
-y0 = zeros(1,4); % object starts at home position each time
+y0 = zeros(1,10); % object starts at home position each time
 [tout, yout] = ode45(fcn, tspan, y0, options);         % trying with 15s to see if problem is too stiff
 
 obj = [yout(:, 1) yout(:, 3)];

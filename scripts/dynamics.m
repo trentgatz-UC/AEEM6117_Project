@@ -3,7 +3,8 @@ clear; close all; clc;
 %% Inputs
 targ = [.5 .5];
 vid_framerate = 24; % video frame rate (frames / second)
-vid_name = '..\Output\milestone1';
+% vid_name = '..\Output\milestone1';
+vid_name = 'testing_new_dynamics';
 
 %% Givens
 k = 95.54; % N/m - spring stiffness
@@ -24,7 +25,6 @@ robots = [r1; r2; r3];
 y0 = zeros(4,1);
 % y0(1) = .1;
 % y0(3) = -.1;
-
 % pos_ic = [robots(1,1) robots(1,2)] / 15; % moved directly toward a different robot
 % y0(1) = pos_ic(1);
 % y0(3) = pos_ic(2);
@@ -56,14 +56,29 @@ rbi_hat = Utils.unitvect(rbi); %unit vectors from robots to object
 
 d2ydt2 = zeros(4,1);
 
+p = 1.134*ones(1,3); % cable lengths around spool
+p(1) = 1.134 + (t)/100;
+
+% this length means that maximum cable length is expended @ full spooled
+% out, total cable length 2 meters, breaks if it leaves boundaries
+%{
+NOTES
+=======
+ - need to account for spoooled cable length
+ - how to make these equations work so that a single value is output?
+
+ - p is what should be iterated by the fis, in a way
+ - voltage, which expands / retracts p
+%}
+
 
 %% Think these are wrong. See paper 3, equations 5 - 9
 % eventual input from controller should be altering cable length, not
 % applying some force
 d2ydt2(1) = x(2);
-d2ydt2(2) = k/m*l0*(sum(rbi_hat(:,1))) - N*x(1);
+d2ydt2(2) = k/m*(p-l0)*(rbi_hat(:,1)) - N*x(1)/m; % should this last term be divided by m ?, make system stiffer
 d2ydt2(3) = x(4);
-d2ydt2(4) = k/m*l0*(sum(rbi_hat(:,2))) - N*x(3);
+d2ydt2(4) = k/m*(p-l0)*(rbi_hat(:,2)) - N*x(3)/m;
 end
 
 %% Visualization Functions
