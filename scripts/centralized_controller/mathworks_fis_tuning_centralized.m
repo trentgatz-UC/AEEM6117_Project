@@ -1,6 +1,11 @@
 %% Mathworks Built in FIS Tuning Methods
 % Centralized Controller
 clear; close all; clc;
+
+%{
+Rule of thumb online - population should be 3x the number of inptus
+%}
+
 %% Givens
 k = 95.54; % N/m - spring stiffness
 m = 0.01; % kg - mass
@@ -32,15 +37,15 @@ fis_options = tunefisOptions('Method', 'ga',...
     'UseParallel', true);
 
 %% Setting GA Options
-fis_options.MethodOptions.FunctionTolerance = 1e-6;
+fis_options.MethodOptions.FunctionTolerance = 1e-3;
 fis_options.MethodOptions.ConstraintTolerance = 1e-3;
 fis_options.MethodOptions.FitnessLimit = 1;
-fis_options.MethodOptions.PopulationSize = 100;
-fis_options.MethodOptions.MaxGenerations = 1000;
+fis_options.MethodOptions.PopulationSize = 400;
+fis_options.MethodOptions.MaxGenerations = 50;
 fis_options.MethodOptions.UseParallel = true;
-fis_options.MethodOptions.MaxStallGenerations = 80;
+fis_options.MethodOptions.MaxStallGenerations = 10;
 
-stalltime = 12 * 3600; % 1 hour stall for testing
+stalltime = 1 * 3600; % 1 hour stall for testing
 fis_options.MethodOptions.MaxStallTime = stalltime;
 
 
@@ -50,6 +55,7 @@ fis_trained = tunefis(fis, [in;out;rule], ...
     @(this_fis)cost_function_mw(this_fis, target, robots, k, m, l0), fis_options);
 
 writeFIS(fis_trained, "centralized_FIS_trained.fis")
+save("centralized_fis_output.mat")
 
 %% rerun & make video
 fcn = @(t,x) odefcn_centralized(t,x,robots,k, m, l0,fis_trained,target);
@@ -78,7 +84,7 @@ y0 = zeros(1,10); % object starts at home position each time
 obj = [yout(:, 1) yout(:, 3)];
 dist = sqrt(sum(sum(((obj-target).^2),2))); % distance between object and target @ each time step
 cost = dist*10 + 500*(tspan(end) - tout(end));
-if sum(yout(:,1)) + sum(yout(:,3)) == 0
+if sum(abs(yout(:,1))) + sum(abs(yout(:,3))) < 1e-10
     cost = cost + 100;
 end
 end
@@ -165,7 +171,7 @@ p = p + 2-0.866; %p above is delta spool, add initially spooled length
 Calculate object position based on change in spooled cable lengths
 - Ensure y0 (initial cable length) is set properly in inputs to system
 %}
-d2ydt2 = zeros(7,1);
+d2ydt2 = zeros(10,1);
 d2ydt2(1) = x(2);
 d2ydt2(2) = k/m*(p-l0)*(rbi_hat(:,1)) - N*x(1)/m; % should this last term be divided by m ?, make system stiffer
 d2ydt2(3) = x(4);

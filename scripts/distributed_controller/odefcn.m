@@ -67,7 +67,8 @@ warning('off', 'all');
 for i = 1:3
     distance = sqrt( (robots(i,1)-obj(1))^2 + (robots(i,2)-obj(2))^2) - ...
         sqrt( (robots(i,1) - target(1))^2 + (robots(i,2)-target(2))^2);
-    fis_input = [distance, x_velocity, y_velocity];
+    % fis_input = [distance, x_velocity, y_velocity];
+    fis_input = distance;
     voltage_input(i) = evalfis(fis, fis_input);
 end
 
