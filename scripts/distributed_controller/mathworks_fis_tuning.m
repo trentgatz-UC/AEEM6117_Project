@@ -33,14 +33,14 @@ fis_options = tunefisOptions('Method', 'ga',...
     'UseParallel', true);
 
 % Setting GA optiosn
-fis_options.MethodOptions.FunctionTolerance = 1e-3;
+fis_options.MethodOptions.FunctionTolerance = 1e-6;
 fis_options.MethodOptions.ConstraintTolerance = 1e-3;
 fis_options.MethodOptions.FitnessLimit = 1;
-fis_options.MethodOptions.PopulationSize = 20;
+fis_options.MethodOptions.PopulationSize = 100;
 % fis_options.MethodOptions.PlotFcn = {@gaplotbestf, @gaplotrange};
-fis_options.MethodOptions.MaxGenerations = 100;
+fis_options.MethodOptions.MaxGenerations = 1000;
 fis_options.MethodOptions.UseParallel = true;
-fis_options.MethodOptions.MaxStallGenerations = 50;
+fis_options.MethodOptions.MaxStallGenerations = 80;
 
 stalltime = 12 * 3600; % 1 hour stall for testing
 fis_options.MethodOptions.MaxStallTime = stalltime;
@@ -52,7 +52,7 @@ fis_trained = tunefis(fis, [in;out;rule], ...
 writeFIS(fis_trained, "dynamics_FIS_trained.fis")
 
 %% rerun & make video
-fcn = @(t,x) odefcn(t,x,robots,k, m, l0,fis,target);
+fcn = @(t,x) odefcn(t,x,robots,k, m, l0,fis_trained,target);
 tspan = [0 20]; % simulation is to run for 20 seconds
 y0 = zeros(1,10); % object starts at home position each time
 event_fcn = @(t,y) myevent_fcn(t,y,robots);
