@@ -62,5 +62,14 @@ classdef Utils
             cable_coords = robots - obj;
             cable_lengths = sqrt(sum(cable_coords.^2,2));
         end
+
+        function [theta] = vector_angle(p1, p2)
+            % returns angle in radians
+
+            rise = p2(2) - p1(2);
+            run = p2(1) - p1(1);
+            theta = atan(rise / run);
+        end
+
     end
 end

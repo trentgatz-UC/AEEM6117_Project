@@ -2,7 +2,6 @@
 % Distributed Controller
 clear; close all; clc;
 
-disp('This fis is running ode45\nOther instance is using ode15s\n.')
 %% Givens
 k = 95.54; % N/m - spring stiffness
 m = 0.01; % kg - mass
