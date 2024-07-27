@@ -1,12 +1,14 @@
 %% Centralized Controller - Dynamics Case
 clear; close all; clc;
-
+root = matlab.project.rootProject().RootFolder();
+save_dir = fullfile(root, 'centralized_controller');
 %% Givens
 k = 95.54; % N/m - spring stiffness
 m = 0.01; % kg - mass
 l0 = 1; % m - minimum length
 a = 0.866; % m - distance between robots
-tf = 20; % sec - maximum simulation time
+tspan = [0:.04:20];
+
 
 %% Robot Positions
 r1 = [-a/2 -a*tand(30)/2];  % bottom left
@@ -26,7 +28,7 @@ end
 fis.DisableStructuralChecks = true;
 
 fis_options = tunefisOptions('Method', 'ga',...
-    'OptimizationType', 'tuning',...
+    'OptimizationType', 'tuning',...c
     'Display', 'tuningonly',...
     'UseParallel', true);
 
@@ -34,10 +36,10 @@ fis_options = tunefisOptions('Method', 'ga',...
 fis_options.MethodOptions.FunctionTolerance = 1e-3;
 fis_options.MethodOptions.ConstraintTolerance = 1e-3;
 fis_options.MethodOptions.FitnessLimit = 1;
-fis_options.MethodOptions.PopulationSize = 400;
-fis_options.MethodOptions.MaxGenerations = 50;
+fis_options.MethodOptions.PopulationSize = 500;
+fis_options.MethodOptions.MaxGenerations = 200;
 fis_options.MethodOptions.UseParallel = true;
-fis_options.MethodOptions.MaxStallGenerations = 10;
+fis_options.MethodOptions.MaxStallGenerations = 65;
 
 stalltime = 12 * 3600; % 1 hour stall for testing
 fis_options.MethodOptions.MaxStallTime = stalltime;
@@ -45,42 +47,28 @@ fis_options.MethodOptions.MaxStallTime = stalltime;
 
 %% Train & Save
 w = warning('off', 'all');
-fis_trained = tunefis(fis, [in;out;rule], ...
-    @(this_fis)cost_function_mw(this_fis, target, robots, k, m, l0), fis_options);
 
-writeFIS(fis_trained, "centralized_FIS_trained.fis")
-save("centralized_fis_output.mat")
+system_fcn = @(input1)sim_system(tspan, target, robots,k,m,l0,input1);
+fis_trained = tunefis(fis, [in;out;rule], ...
+    @(this_fis)cost_function(this_fis, target, system_fcn), fis_options, system_fcn);
+
+writeFIS(fis_trained, fullfile(save_dir, "centralized_FIS_trained.fis"))
+save(fullfile(save_dir, "centralized_fis_output.mat"))
 
 %% rerun & make video
-fcn = @(t,x) odefcn_centralized(t,x,robots,k, m, l0,fis_trained,target);
-tspan = [0 20]; % simulation is to run for 20 seconds
-y0 = zeros(1,10); % object starts at home position each time
-event_fcn = @(t,y) myevent_fcn(t,y,robots);
-options = odeset('RelTol', 1e-3, 'Events', event_fcn);
-[tout, yout] = ode45(fcn, tspan, y0, options);
+[tout, yout] = system_fcn(fis_trained);
 
 vid_framerate = 24; % video frame rate (frames / second)
-root = matlab.project.rootProject().RootFolder();
-vid_name = fullfile(root,'milestone2_centralized_control');
+vid_name = fullfile(save_dir,'milestone2_centralized_control');
 figure
 vid = make_video(vid_name, tout, yout, vid_framerate, robots, target);
 
-function [cost] = cost_function_mw(fis, target, robots, k, m, l0)
-% cost function for the centralized case
+function [tout, yout] = sim_system(tspan, target, robots, k, m, l0, fis)
 event_fcn = @(t,y) myevent_fcn(t,y,robots);
-
-options = odeset('RelTol', 1e-3, 'Events', event_fcn);
+ode_options = odeset('RelTol', 1e-3, 'Events', event_fcn);
 fcn = @(t,x) odefcn_centralized(t,x,robots,k, m, l0,fis,target);
-tspan = [0 20]; % simulation is to run for 20 seconds
 y0 = zeros(1,10); % object starts at home position each time
-[tout, yout] = ode45(fcn, tspan, y0, options);         % trying with 15s to see if problem is too stiff
-
-obj = [yout(:, 1) yout(:, 3)];
-dist = sqrt(sum(sum(((obj-target).^2),2))); % distance between object and target @ each time step
-cost = dist*10 + 500*(tspan(end) - tout(end));
-if sum(abs(yout(:,1))) + sum(abs(yout(:,3))) < 1e-10
-    cost = cost + 100;
-end
+[tout, yout] = ode45(fcn, tspan, y0, ode_options);
 end
 
 function d2ydt2 = odefcn_centralized(t, x, robots, k, m, l0, fis, target)
@@ -151,7 +139,7 @@ p = nan(1,3);
 for i = 1:N
     x_motor = x(3+2*i:4+2*i); % Individual Motor state vector
     u = voltage_input(i); % Individual Motor input voltage
-    
+
     dxdy_motor((2*i)-1:2*i) = A*x_motor + B*u; %State vector of all motors
 
     y = C*x_motor + D*voltage_input; % cable position & velocity

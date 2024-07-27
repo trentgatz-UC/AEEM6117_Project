@@ -49,7 +49,7 @@ w = warning('off', 'all');
 fis_trained = tunefis(fis, [in;out;rule], ...
     @(this_fis)cost_function_mw(this_fis, target, robots, k, m, l0), fis_options);
 
-writeFIS(fis_trained, "dynamics_FIS_trained.fis")
+writeFIS(fis_trained, "distributed_FIS_trained.fis")
 
 %% rerun & make video
 fcn = @(t,x) odefcn(t,x,robots,k, m, l0,fis_trained,target);
