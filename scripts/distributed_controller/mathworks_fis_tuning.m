@@ -49,7 +49,7 @@ w = warning('off', 'all');
 fis_trained = tunefis(fis, [in;out;rule], ...
     @(this_fis)cost_function_mw(this_fis, target, robots, k, m, l0), fis_options);
 
-writeFIS(fis_trained, "distributed_FIS_trained.fis")
+writeFIS(fis_trained, fullfile(root,"distributed_FIS_trained.fis"))
 
 %% rerun & make video
 fcn = @(t,x) odefcn(t,x,robots,k, m, l0,fis_trained,target);
@@ -64,6 +64,7 @@ root = matlab.project.rootProject().RootFolder();
 vid_name = fullfile(root,'milestone2_distributed_control');
 figure
 vid = make_video(vid_name, tout, yout, vid_framerate, robots, target);
+save(fullfile(root,"distributed_control.mat"))
 
 function [cost] = cost_function_mw(fis, target, robots, k, m, l0)
 % cost function for the centralized case

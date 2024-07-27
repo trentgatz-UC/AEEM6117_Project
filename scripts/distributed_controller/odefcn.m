@@ -37,7 +37,7 @@ y_velocity = x(4);
 % Determine Angles between robots & object for forcing directions
 theta = nan(1,3);
 for i = 1:3
-    theta(i) = vector_angle(robots(i,:), obj);
+    theta(i) = Utils.vector_angle(robots(i,:), obj);
 end
 
 %% Define State Space Equations Matrices for the Motor (Constants)
