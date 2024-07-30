@@ -52,6 +52,9 @@ These state space matrices are based on the following assumptions:
 5. Inductance = 1
 6. Ke = 1
 7. r_spool = 1
+
+ TF = 1/ (2*s^2 + 1)
+ state space matrices determined via matlab tf2ss()
 %}
 A = [0 -1/2; 1 0];
 B = [1;0];
@@ -85,8 +88,7 @@ for i = 1:N
     
     dxdy_motor((2*i)-1:2*i) = A*x_motor + B*u; %State vector of all motors
 
-    y = C*x_motor + D*voltage_input; % cable position & velocity
-    p(i) = y(1);
+    p(i) = C*x_motor + D*u; % cable position & velocity % (should be voltage_input(i)
 end
 
 p = p + 2-0.866; %p above is delta spool, add initially spooled length

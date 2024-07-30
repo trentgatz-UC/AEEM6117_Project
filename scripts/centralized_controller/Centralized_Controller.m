@@ -142,8 +142,7 @@ for i = 1:N
 
     dxdy_motor((2*i)-1:2*i) = A*x_motor + B*u; %State vector of all motors
 
-    y = C*x_motor + D*voltage_input; % cable position & velocity
-    p(i) = y(1);
+    p(i) = C*x_motor + D*u; % cable position & velocity
 end
 
 p = p + 2-0.866; %p above is delta spool, add initially spooled length

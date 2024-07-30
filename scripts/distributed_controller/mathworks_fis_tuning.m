@@ -2,7 +2,7 @@
 % Distributed Controller
 clear; close all; clc;
 
-root = matlab.project.rootProject().RootFolder
+root = matlab.project.rootProject().RootFolder;
 %% Givens
 k = 95.54; % N/m - spring stiffness
 m = 0.01; % kg - mass
@@ -31,15 +31,15 @@ fis.DisableStructuralChecks = true;
 fis_options = tunefisOptions('Method', 'ga',...
     'OptimizationType', 'tuning',...
     'Display', 'tuningonly',...
-    'UseParallel', true);
+    'UseParallel', false);
 
 % Setting GA optiosn
 fis_options.MethodOptions.FunctionTolerance = 1e-3;
 fis_options.MethodOptions.ConstraintTolerance = 1e-3;
 fis_options.MethodOptions.FitnessLimit = 1;
-fis_options.MethodOptions.PopulationSize = 200;
-fis_options.MethodOptions.MaxGenerations = 300;
-fis_options.MethodOptions.UseParallel = true;
+fis_options.MethodOptions.PopulationSize = 5;
+fis_options.MethodOptions.MaxGenerations = 2;
+fis_options.MethodOptions.UseParallel = false;
 fis_options.MethodOptions.MaxStallGenerations = 65;
 
 stalltime = 2 * 3600; % 1 hour stall for testing
