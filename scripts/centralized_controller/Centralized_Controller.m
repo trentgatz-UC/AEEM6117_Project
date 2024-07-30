@@ -7,7 +7,7 @@ k = 95.54; % N/m - spring stiffness
 m = 0.01; % kg - mass
 l0 = 1; % m - minimum length
 a = 0.866; % m - distance between robots
-tspan = [0:.04:20];
+tspan = [0:.001:20];
 
 
 %% Robot Positions
@@ -15,7 +15,7 @@ r1 = [-a/2 -a*tand(30)/2];  % bottom left
 r2 = [0 a/(2*cosd(30))];    % top
 r3 = [a/2 -a*tand(30)/2];   % bottom right
 robots = [r1; r2; r3];
-target = [0.1 0.2];
+target = [-.05 -.05];
 
 %% Setting up FIS
 fis = readfis("RobotController_centralized.fis");
