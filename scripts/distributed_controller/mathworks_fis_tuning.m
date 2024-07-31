@@ -18,7 +18,7 @@ robots = [r1; r2; r3];
 target = [-.05 -.05];
 
 % fis = readfis("RobotController.fis");
-fis = FIS_setup(5);
+fis = FIS_setup(3);
 
 [in, out, rule] = getTunableSettings(fis);
 for i = 1:numel(rule)
@@ -31,15 +31,15 @@ fis.DisableStructuralChecks = true;
 fis_options = tunefisOptions('Method', 'ga',...
     'OptimizationType', 'tuning',...
     'Display', 'tuningonly',...
-    'UseParallel', false);
+    'UseParallel', true);
 
 % Setting GA optiosn
 fis_options.MethodOptions.FunctionTolerance = 1e-3;
 fis_options.MethodOptions.ConstraintTolerance = 1e-3;
 fis_options.MethodOptions.FitnessLimit = 1;
-fis_options.MethodOptions.PopulationSize = 5;
-fis_options.MethodOptions.MaxGenerations = 2;
-fis_options.MethodOptions.UseParallel = false;
+fis_options.MethodOptions.PopulationSize = 300;
+fis_options.MethodOptions.MaxGenerations = 200;
+fis_options.MethodOptions.UseParallel = true;
 fis_options.MethodOptions.MaxStallGenerations = 65;
 
 stalltime = 2 * 3600; % 1 hour stall for testing
