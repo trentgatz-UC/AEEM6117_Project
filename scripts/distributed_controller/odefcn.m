@@ -23,6 +23,8 @@ x(10) = cable velocity of robot 3
 
 %}
 
+
+
 obj = [x(1) x(3)];
 Utils.isValidCableLength(robots, obj);
 N = size(robots,1);         % number of robots

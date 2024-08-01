@@ -17,6 +17,7 @@ target = [0.1 0.2];
 
 fis = FIS_setup(3);
 
+
 [in, out, rule] = getTunableSettings(fis);
 for i = 1:numel(rule)
     rule(i).Antecedent.Free = false;
@@ -28,23 +29,23 @@ fis.DisableStructuralChecks = true;
 fis_options = tunefisOptions('Method', 'ga',...
     'OptimizationType', 'tuning',...
     'Display', 'tuningonly',...
-    'UseParallel', true);
+    'UseParallel', false);
 
 % Setting GA optiosn
 fis_options.MethodOptions.FunctionTolerance = 1e-6;
 fis_options.MethodOptions.ConstraintTolerance = 1e-3;
 fis_options.MethodOptions.FitnessLimit = 1;
-fis_options.MethodOptions.PopulationSize = 200;
-fis_options.MethodOptions.MaxGenerations = 300;
-fis_options.MethodOptions.UseParallel = true;
-fis_options.MethodOptions.MaxStallGenerations = 65;
+fis_options.MethodOptions.PopulationSize = 5;
+fis_options.MethodOptions.MaxGenerations = 2;
+fis_options.MethodOptions.UseParallel = false;
+fis_options.MethodOptions.MaxStallGenerations = 5;
 
 stalltime = 2 * 3600; % 2 hour stall for testing
 fis_options.MethodOptions.MaxStallTime = stalltime;
 
 w = warning('off', 'all');
 fis_trained = tunefis(fis, [in;out;rule], ...
-    @(this_fis)cost_function_mw(this_fis, target, robots, k, m, l0), fis_options);
+    @(this_fis)cost_function_mw(fis, target, robots), fis_options);
 
 writeFIS(fis_trained, "kinematics_distributed_trained.fis")
 
@@ -67,10 +68,10 @@ vid = make_video(vid_name, tout, yout, vid_framerate, robots, target);
 
 function [cost] = cost_function_mw(fis, target, robots)
 [tout, yout] = system_kinematics(fis, robots, target);
-
+tspan = 20;
 obj = [yout(:, 1) yout(:, 3)];
 dist = sqrt(sum(sum(((obj-target).^2),2))); % distance between object and target @ each time step
-cost = dist*10 + 500*(tspan(end) - tout(end));
+cost = dist*10 + 500*(tspan - tout(end));
 if sum(yout(:,1)) + sum(yout(:,3)) == 0
     cost = cost + 100;
 end
