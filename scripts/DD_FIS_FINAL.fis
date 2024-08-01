@@ -1,0 +1,33 @@
+[System]
+Name='distributed_FIS_trained_point2'
+Type='mamdani'
+Version=2.0
+NumInputs=1
+NumOutputs=1
+NumRules=3
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='Distance to Target'
+Range=[-0.866 0.866]
+NumMFs=3
+MF1='mf1':'trimf',[-0.416666666666667 0 0.416666666666667]
+MF2='mf2':'trimf',[-0.239014457943227 -0.105398902948325 0.00110776294507287]
+MF3='mf3':'trimf',[0.583333333333333 1 1.41666666666667]
+
+[Output1]
+Name='Voltage'
+Range=[-10 10]
+NumMFs=3
+MF1='mf1':'trimf',[-5.84909201739109 -5.12475833241124 7.00432218995349]
+MF2='mf2':'trimf',[6.29923738900158 8.75245996792821 9.80411926924867]
+MF3='mf3':'trimf',[0.583333333333333 1 1.41666666666667]
+
+[Rules]
+1, 2 (1) : 1
+2, 1 (1) : 1
+3, 1 (1) : 1
