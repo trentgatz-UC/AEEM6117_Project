@@ -29,13 +29,19 @@ dd_fcn = @(target) ode45(@(t,x)odefcn(t,x,robots,k,m,l0,fis,target), tspan, y0, 
 dd_tbl = run_em_all(dd_fcn);
 
 %% Dynamics Centralized
+fis = readfis("DC_FIS_FINAL.fis");
+dc_fcn = @(target) ode45(@(t,x)odefcn_centralized(t,x,robots,k,m,l0,fis,target), tspan, y0, options);
+dc_tbl = run_em_all(dc_fcn);
 
 %% Kinematics Centralized
-
-
+fis = readfis("KIN_FIS_FINAL.fis");
+kin_fcn = @(target) ode45(@(t,x)kinematics_ode(t,x,robots,k,m,l0,fis,target), tspan, y0, options);
+kin_tbl = run_em_all(kin_fcn);
 
 function [tbl] = run_em_all(sim_fcn)
 % run all cases
+
+var_names = {'Target', 'Final Postion', 'Final Distance', 'Total Distance'};
 
 % sim_fcn - function handle to create data points
 
@@ -43,19 +49,19 @@ function [tbl] = run_em_all(sim_fcn)
 %Import standardized set of testing targets
 data = load("testing_targets.mat");
 targets = data.targets;
-tbl = table();
-for i = 1:1%size(targets,1) %#todo uncomment this to run all 20 cases
-    % target = targets(i,:);
-    target = [-.05 -.05];
+tbl = table([0 0], [0 0], 0, 0, 'VariableNames', var_names);
+tbl = repmat(tbl, size(targets,1),1); %initialize table
+parfor i = 1:size(targets,1) %#todo uncomment this to run all 20 cases
+    target = targets(i,:);
     % run simulation
-    [tout, yout] = sim_fcn(target);
+    [~, yout] = sim_fcn(target);
 
     obj = [yout(:,1) yout(:,3)];
     final_position = [yout(end,1) yout(end,3)];
     total_distance = sqrt(sum(sum(((obj-target).^2),2)));
     final_distance = sqrt(sum(sum(((final_position-target).^2),2)));
-    temp = table(target, final_position, final_distance, total_distance, 'VariableNames', {'Target', 'Final Postion', 'Final Distance', 'Total Distance'});
-    tbl = [tbl; temp];
+    temp = table(target, final_position, final_distance, total_distance, 'VariableNames', var_names);
+    tbl(i,:) = temp;
 end
 end
 
